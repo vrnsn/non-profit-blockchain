@@ -134,8 +134,8 @@ Resources:
   BlockchainExplorerELB:
     Type:                                         AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      SecurityGroups:                             [!Ref BlockchainSecurityGroup]
-      Subnets:                                    [!Ref BlockchainPublicSubnet]
+      SecurityGroups:                             [!Ref DBEC2SecurityGroup]
+      Subnets:                                    [!Ref DBPrivateSubnetA,!Ref DBPrivateSubnetB]
       Instances:
         - !Ref                                    BlockchainEC2
       Listeners:
