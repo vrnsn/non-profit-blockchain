@@ -157,6 +157,12 @@ Outputs:
     Description:                                  Public DNS of the Blockchain Explorer ELB
     Value:
       !GetAtt                                     BlockchainExplorerELB.DNSName
+  RDSHost:
+    Description: Host string of the Blockchain Explorer Postgres database instance
+    Value:
+        - Fn::GetAtt:
+          - DB
+          - Endpoint.Address
   JDBCConnectionString:
     Description: JDBC connection string for Blockchain Explorer Postgres database
     Value:
