@@ -153,10 +153,6 @@ Resources:
           Value:                                  BlockchainExplorerELB
  
 Outputs:
-  SecurityGroupID:
-    Description:                                  Security Group ID of the Blockchain Explorer RDS instance
-    Value:
-      !GetAtt                                     BlockchainSecurityGroup.GroupId
   BlockchainExplorerELBDNS:
     Description:                                  Public DNS of the Blockchain Explorer ELB
     Value:
