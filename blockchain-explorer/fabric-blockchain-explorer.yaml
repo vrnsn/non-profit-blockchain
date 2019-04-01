@@ -16,13 +16,13 @@ Description:                                      >
   This template creates a Postgres RDS instance for Hyperledger Blockchain Explorer.
 Parameters:
   BlockchainVPC:
-    Type:                                         AWS::EC2::VPC
+    Type:                                         String
     Description:                                  Name of the VPC that contains the Fabric client node
   BlockchainEC2:
-    Type:                                         AWS::EC2::Instance
+    Type:                                         String
     Description:                                  EC2 instance used as the Fabric client node
   BlockchainSecurityGroup:
-    Type:                                         AWS::EC2::SecurityGroup
+    Type:                                         String
     Description:                                  Security group of the Fabric client node
   DBName:
     Type:                                         String
@@ -44,9 +44,9 @@ Parameters:
     Default:                                      db.t2.micro
     Description:                                  Database instance class
   DBStorage:
+    Type:                                         Number
     Default:                                      '5'
     Description:                                  The size of the database (Gb)
-    Type:                                         Number
  
 Resources:
   DBEC2SecurityGroup:
