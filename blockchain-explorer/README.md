@@ -92,6 +92,7 @@ which includes bug fixes applied to v1.2.
 ```
 cd ~/blockchain-explorer
 git checkout v0.3.7.1 
+git status
 ```
 
 ## Step 2 - Create the Explorer Database
@@ -103,7 +104,7 @@ cd ~/non-profit-blockchain/blockchain-explorer
 ./blockchain-explorer-rds.sh
 ```
 
-## Step 3 - Prepare Blockchain Explorer for use
+## Step 3 - Prepare Blockchain Explorer Postgres Database for use
 
 Once step 2 has completed and your Postgres instance is running, you will create tables in a Postgres database. These tables are used by Blockchain Explorer to store details of your Fabric network. Before running the script to create the tables, update the Blockchain Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
 
@@ -111,7 +112,10 @@ Once step 2 has completed and your Postgres instance is running, you will create
 sed -i "s/varchar(64)/varchar(256)/g" ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/explorerpg.sql
 ```
 
-Update the Blockchain Explorer database connection config with the AWS RDS connection details. Replace the host, username and password with those you used when you created your Postgres instance:
+Update the Blockchain Explorer database connection config with the AWS RDS connection details. Replace the host, username and password with those you used when you created your Postgres instance. These values can be obtained from the following:
+
+* host: from the CloudFormation stack you created in step 2. See the output field: RDSHost, in the CloudFormation console.
+* username & password: you either passed these into the creation of the stack in step 2, or you used the defaults. See the default values in fabric-blockchain-explorer.yaml.
 
 ```
 vi ~/blockchain-explorer/app/explorerconfig.json
@@ -147,6 +151,7 @@ vi ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/createdb.sh
 Update the script file:
 
 ```
+#!/bin/bash
 export CONN=$( jq -r .postgreSQL.conn ../../../../explorerconfig.json )
 export HOSTNAME=$( jq -r .postgreSQL.host ../../../../explorerconfig.json )
 export USER=$( jq -r .postgreSQL.username ../../../../explorerconfig.json )
@@ -168,7 +173,16 @@ If you need to connect to psql via the command line, use this:
 psql -X -h sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com -d fabricexplorer --username=master 
 ```
 
-Replace the contents of the Blockchain Explorer config file (the connection profile) so it looks as follows. You can simply replace all the contents, the replace the following values:
+Now create the database tables. You will need to enter the password for the 'master' user, the same as you entered up above when editing 'explorerconfig.json':
+
+```
+cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
+./createdb.sh
+```
+
+## Step 4 - Prepare Blockchain Explorer for use
+
+Replace the contents of the Blockchain Explorer config file (the connection profile) so it looks as follows. You can simply replace all the contents with the template below, then replace the following values:
 
 * organization and mspid, to match your member ID. This appears in a number of places
 * channel name, if yours is different

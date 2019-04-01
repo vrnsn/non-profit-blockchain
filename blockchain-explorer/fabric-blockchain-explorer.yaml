@@ -24,6 +24,9 @@ Parameters:
   BlockchainSecurityGroup:
     Type:                                         String
     Description:                                  Security group of the Fabric client node
+  BlockchainPublicSubnet:
+    Type:                                         String
+    Description:                                  Subnet of the Fabric client node
   DBName:
     Type:                                         String
     Default:                                      fabricexplorer
@@ -134,8 +137,8 @@ Resources:
   BlockchainExplorerELB:
     Type:                                         AWS::ElasticLoadBalancing::LoadBalancer
     Properties:
-      SecurityGroups:                             [!Ref DBEC2SecurityGroup]
-      Subnets:                                    [!Ref DBPrivateSubnetA,!Ref DBPrivateSubnetB]
+      SecurityGroups:                             [!Ref BlockchainSecurityGroup]
+      Subnets:                                    [!Ref BlockchainPublicSubnet]
       Instances:
         - !Ref                                    BlockchainEC2
       Listeners:
