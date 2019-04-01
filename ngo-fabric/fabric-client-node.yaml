@@ -205,11 +205,11 @@ Outputs:
     Value:
       !GetAtt                                     BlockchainWorkshopSecurityGroup.GroupId
   EC2URL:
-    Description:                                  Public DNS of the EC2 instance
+    Description:                                  Public DNS of the EC2 Fabric client node instance
     Value:
       !GetAtt                                     BlockchainWorkshopEC2.PublicDnsName
   EC2ID:
-    Description:                                  Instance ID of the EC2 instance
+    Description:                                  Instance ID of the EC2 Fabric client node instance
     Value:
       !Ref                                        BlockchainWorkshopEC2
   ELBDNS:

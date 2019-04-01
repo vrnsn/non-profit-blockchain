@@ -49,8 +49,8 @@ sudo yum install gcc-c++ -y
 Install jq and postgress. We only really need the postgres client, but I install everything just in case I miss a dependency:
 
 ```
-sudo yum install jq
-sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
+sudo yum install -y jq
+sudo yum install -y postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
 ```
 
 You will need to export a couple of environment variables. You can either do this by simply sourcing the 
@@ -90,6 +90,7 @@ align to the Fabric versions. Managed Blockchain is currently using v1.2 of Fabr
 which includes bug fixes applied to v1.2.
 
 ```
+cd ~/blockchain-explorer
 git checkout v0.3.7.1 
 ```
 
