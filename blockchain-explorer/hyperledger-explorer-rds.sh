@@ -19,9 +19,9 @@ BlockchainEC2=$(aws cloudformation --region $REGION describe-stacks --stack-name
 BlockchainSecurityGroup=$(aws cloudformation --region $REGION describe-stacks --stack-name $NETWORKNAME-fabric-client-node --query 'Stacks[0].Outputs[?OutputKey==`SecurityGroupID`].OutputValue' --output text)
 BlockchainPublicSubnet=$(aws cloudformation --region $REGION describe-stacks --stack-name $NETWORKNAME-fabric-client-node --query 'Stacks[0].Outputs[?OutputKey==`PublicSubnetID`].OutputValue' --output text)
 
-echo Creating Hyperledger Blockchain Explorer Postgres RDS instance in VPC $BlockchainVPC. 
+echo Creating Hyperledger Explorer Postgres RDS instance in VPC $BlockchainVPC. 
 echo Allowing connection to RDS from Fabric Client node EC2 instance: $BlockchainEC2 in security group: $BlockchainSecurityGroup in subnet $BlockchainPublicSubnet
-aws cloudformation deploy --stack-name $NETWORKNAME-fabric-explorer-rds --template-file fabric-blockchain-explorer.yaml \
+aws cloudformation deploy --stack-name $NETWORKNAME-hyperledger-explorer-rds --template-file hyperledger-explorer-cfn.yaml \
 --capabilities CAPABILITY_NAMED_IAM \
 --parameter-overrides BlockchainVPC=$BlockchainVPC BlockchainEC2=$BlockchainEC2 \
   BlockchainSecurityGroup=$BlockchainSecurityGroup BlockchainPublicSubnet=$BlockchainPublicSubnet \

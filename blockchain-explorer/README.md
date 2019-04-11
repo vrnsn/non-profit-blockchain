@@ -1,18 +1,16 @@
-# Running Hyperledger Blockchain Explorer on Amazon Managed Blockchain
+# Running Hyperledger Explorer on Amazon Managed Blockchain
 
-Hyperledger Blockchain Explorer is an open source browser for viewing activity on the underlying 
-Fabric network. It can be used with Amazon Managed Blockchain though it requires a few tweaks to
-get it working.
+Customers want to visualise their Fabric networks on Amazon Managed Blockchain. Hyperledger Explorer is an open source browser for viewing activity on the underlying Fabric network. It offers a web application that provides a view into the configuration of the Fabric network (channels, chaincodes, peers, orderers, etc.), as well as the activity taking place on the network (transactions, blocks, etc.). It can be used with Amazon Managed Blockchain though it requires a few tweaks to get it working.
 
-Hyperledger Blockchain Explorer consists of a few components:
+Hyperledger Explorer consists of a few components:
 
 * a database that stores the Fabric network configuration, such as peers, orderers, as well as details of the chaincodes, channels, blocks & transactions
 * a 'sync' component that regularly queries the Fabric network for changes to the config and details of new transactions and blocks
 * a web application the provides a view of the current network state
 
-We will configure Hyperledger Blockchain Explorer to use an AWS RDS Postgres instance so we can benefit from a managed database service, rather than running Postgres locally. We will run the Explorer sync & web app components on the Fabric client node you cereated in [Part 1](../ngo-fabric/README.md).
+We will configure Hyperledger Explorer to use an AWS RDS Postgres instance so we can benefit from a managed database service, rather than running Postgres locally. We will run the Explorer sync & web app components on the Fabric client node you cereated in [Part 1](../ngo-fabric/README.md).
 
-The instructions below are complete. You can refer to the instructions in the Blockchain Explorer Git repo for reference, but you do not need to use them.
+The instructions below are complete. You can refer to the instructions in the Hyperledger Explorer Git repo for reference, but you do not need to use them.
 
 ## Pre-requisites
 
@@ -46,7 +44,7 @@ Amazon Linux seems to be missing g++, so:
 sudo yum install gcc-c++ -y
 ```
 
-Install jq and postgress. We only really need the postgres client, but I install everything just in case I miss a dependency:
+Install jq and postgres. We only really need the postgres client, but I install everything just in case I miss a dependency:
 
 ```
 sudo yum install -y jq
@@ -71,9 +69,9 @@ export NETWORKNAME=<your Fabric network name, from the Managed Blockchain consol
 export REGION=us-east-1
 ```
 
-## Step 1 - Clone the Blockchain Explorer Git repo
+## Step 1 - Clone the Hyperledger Explorer Git repo
 
-The Git repo for Blockchain Explorer is here:
+The Git repo for Hyperledger Explorer is here:
 
 https://github.com/hyperledger/blockchain-explorer
 
@@ -101,21 +99,21 @@ We will use CloudFormation to create our Postgres RDS instance. We want the RDS 
 
 ```
 cd ~/non-profit-blockchain/blockchain-explorer
-./blockchain-explorer-rds.sh
+./hyperledger-explorer-rds.sh
 ```
 
-## Step 3 - Prepare Blockchain Explorer Postgres Database for use
+## Step 3 - Prepare Hyperledger Explorer Postgres Database for use
 
-Once step 2 has completed and your Postgres instance is running, you will create tables in a Postgres database. These tables are used by Blockchain Explorer to store details of your Fabric network. Before running the script to create the tables, update the Blockchain Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
+Once step 2 has completed and your Postgres instance is running, you will create tables in a Postgres database. These tables are used by Hyperledger Explorer to store details of your Fabric network. Before running the script to create the tables, update the Hyperledger Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
 
 ```
 sed -i "s/varchar(64)/varchar(256)/g" ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/explorerpg.sql
 ```
 
-Update the Blockchain Explorer database connection config with the AWS RDS connection details. Replace the host, username and password with those you used when you created your Postgres instance. These values can be obtained from the following:
+Update the Hyperledger Explorer database connection config with the AWS RDS connection details. Replace the host, username and password with those you used when you created your Postgres instance. These values can be obtained from the following:
 
 * host: from the CloudFormation stack you created in step 2. See the output field: RDSHost, in the CloudFormation console.
-* username & password: you either passed these into the creation of the stack in step 2, or you used the defaults. See the default values in fabric-blockchain-explorer.yaml.
+* username & password: you either passed these into the creation of the stack in step 2, or you used the defaults. See the default values in hyperledger-explorer-cfn.yaml.
 
 ```
 vi ~/blockchain-explorer/app/explorerconfig.json
@@ -180,9 +178,9 @@ cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
 ./createdb.sh
 ```
 
-## Step 4 - Prepare Blockchain Explorer for use
+## Step 4 - Prepare Hyperledger Explorer for use
 
-Replace the contents of the Blockchain Explorer config file (the connection profile) so it looks as follows. You can simply replace all the contents with the template below, then replace the following values:
+Replace the contents of the Hyperledger Explorer config file (the connection profile) so it looks as follows. You can simply replace all the contents with the template below, then replace the following values:
 
 * organization and mspid, to match your member ID. This appears in a number of places
 * channel name, if yours is different
@@ -291,7 +289,7 @@ Update the config file:
 }
 ```
 
-Depending on the version of Blockchain Explorer you are using, you may have to update this file also:
+Depending on the version of Hyperledger Explorer you are using, you may have to update this file also:
 
 ```
 vi ~/blockchain-explorer/app/platform/fabric/config_ca.json
@@ -308,7 +306,7 @@ Update the config file:
 }
 ```
 
-Build Blockchain explorer:
+Build Hyperledger Explorer:
 
 ```
 nvm use lts/carbon
@@ -323,11 +321,11 @@ npm test -- -u --coverage
 npm run build
 ```
 
-## Step 4 - Run Blockchain Explorer
+## Step 4 - Run Hyperledger Explorer
 
-Run Blockchain explorer.
+Run Hyperledger Explorer.
 
-NOTE: depending on the version of Blockchain Explorer you are using, you might need to use the ENV variable below, otherwise explorer uses the discovery service and wonderfully assumes that all your Fabric components are being run in docker images on localhost. 
+NOTE: depending on the version of Hyperledger Explorer you are using, you might need to use the ENV variable below, otherwise explorer uses the discovery service and wonderfully assumes that all your Fabric components are being run in docker images on localhost. 
 
 ```
 nvm use lts/carbon
@@ -336,4 +334,4 @@ export DISCOVERY_AS_LOCALHOST=false
 ./start.sh
 ```
 
-The Blockchain Explorer client starts on port 8080. You will already have an ELB that routes traffic to this port - it was created for you in step 1. Once the health checks on the ELB succeed, you can access the blockchain explorer client using the DNS of the ELB (which you will find in the outputs of your CloudFormation stack).
+The Hyperledger Explorer client starts on port 8080. You will already have an ELB that routes traffic to this port - it was created for you in step 1. Once the health checks on the ELB succeed, you can access the Hyperledger Explorer client using the DNS of the ELB (which you will find in the outputs of your CloudFormation stack).

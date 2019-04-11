@@ -13,7 +13,7 @@
  
 AWSTemplateFormatVersion:                         '2010-09-09'
 Description:                                      >
-  This template creates a Postgres RDS instance for Hyperledger Blockchain Explorer.
+  This template creates a Postgres RDS instance for Hyperledger Explorer.
 Parameters:
   BlockchainVPC:
     Type:                                         String
@@ -55,7 +55,7 @@ Resources:
   DBEC2SecurityGroup:
     Type:                                         AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription:                           Blockchain Explorer RDS Access
+      GroupDescription:                           Hyperledger Explorer RDS Access
       VpcId:                                      !Ref BlockchainVPC
       SecurityGroupIngress:
       - IpProtocol:                               tcp
@@ -157,15 +157,15 @@ Resources:
  
 Outputs:
   BlockchainExplorerELBDNS:
-    Description:                                  Public DNS of the Blockchain Explorer ELB
+    Description:                                  Public DNS of the Hyperledger Explorer ELB
     Value:
       !GetAtt                                     BlockchainExplorerELB.DNSName
   RDSHost:
-    Description: Host string of the Blockchain Explorer Postgres database instance
+    Description: Host string of the Hyperledger Explorer Postgres database instance
     Value:
       !GetAtt                                     DB.Endpoint.Address
   JDBCConnectionString:
-    Description: JDBC connection string for Blockchain Explorer Postgres database
+    Description: JDBC connection string for Hyperledger Explorer Postgres database
     Value:
       Fn::Join:
       - ''
