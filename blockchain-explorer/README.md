@@ -2,13 +2,15 @@
 
 Customers want to visualise their Fabric networks on Amazon Managed Blockchain. Hyperledger Explorer is an open source browser for viewing activity on the underlying Fabric network. It offers a web application that provides a view into the configuration of the Fabric network (channels, chaincodes, peers, orderers, etc.), as well as the activity taking place on the network (transactions, blocks, etc.). It can be used with Amazon Managed Blockchain though it requires a few tweaks to get it working.
 
+An Amazon Managed Blockchain provisioned based on the steps in [Part 1](../ngo-fabric/README.md) is a pre-requisite. The steps in this README will provision and run the Hyperledger Explorer sync & web app components on the Fabric client node you created in [Part 1](../ngo-fabric/README.md).
+
 Hyperledger Explorer consists of a few components:
 
 * a database that stores the Fabric network configuration, such as peers, orderers, as well as details of the chaincodes, channels, blocks & transactions
 * a 'sync' component that regularly queries the Fabric network for changes to the config and details of new transactions and blocks
 * a web application the provides a view of the current network state
 
-We will configure Hyperledger Explorer to use an AWS RDS Postgres instance so we can benefit from a managed database service, rather than running Postgres locally. We will run the Explorer sync & web app components on the Fabric client node you cereated in [Part 1](../ngo-fabric/README.md).
+We will configure Hyperledger Explorer to use an AWS RDS Postgres instance so we can benefit from a managed database service, rather than running Postgres locally. 
 
 The instructions below are complete. You can refer to the instructions in the Hyperledger Explorer Git repo for reference, but you do not need to use them.
 
@@ -51,22 +53,12 @@ sudo yum install -y jq
 sudo yum install -y postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
 ```
 
-You will need to export a couple of environment variables. You can either do this by simply sourcing the 
-fabric-exports.sh file below, if you have previously configured it in Step 4 in [Part 1](../ngo-fabric/README.md), 
-or you can manually export the values. 
-
-Either source the file:
+You will need to export a number of environment variables. The easiest way to do this is by simply sourcing the 
+fabric-exports.sh file that you previously configured in Step 4 in [Part 1](../ngo-fabric/README.md):
 
 ```
 cd ~/non-profit-blockchain/ngo-fabric
 source fabric-exports.sh
-```
-
-or export the values:
-
-```
-export NETWORKNAME=<your Fabric network name, from the Managed Blockchain console>
-export REGION=us-east-1
 ```
 
 ## Step 1 - Clone the Hyperledger Explorer Git repo
@@ -119,7 +111,7 @@ Update the Hyperledger Explorer database connection config with the AWS RDS conn
 vi ~/blockchain-explorer/app/explorerconfig.json
 ```
 
-Update the config file:
+Update the config file. I suggest you simply replace all the contents with the snippet below, then replace the 'host' property with your own:
 
 ```
 {
@@ -140,7 +132,7 @@ Update the config file:
 }
 ```
 
-Replace the contents of the table creation script so it looks as follows. You can simply replace all the contents:
+Replace the contents of the table creation script so it looks as follows. You can simply replace all the contents with those below:
 
 ```
 vi ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/createdb.sh
@@ -165,13 +157,13 @@ psql -X -h $HOSTNAME -d $DATABASE --username=$USER -v dbname=$DATABASE -v user=$
 psql -X -h $HOSTNAME -d $DATABASE --username=$USER -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./updatepg.sql ;
 ```
 
-If you need to connect to psql via the command line, use this:
+If you need to connect to psql via the command line, use this (replacing the RDS DNS with your own):
 
 ```
 psql -X -h sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com -d fabricexplorer --username=master 
 ```
 
-Now create the database tables. You will need to enter the password for the 'master' user, the same as you entered up above when editing 'explorerconfig.json':
+Now create the database tables. You will need to enter the password for the 'master' user, the same as you entered up above when editing 'explorerconfig.json'. You will need to enter this password for two different steps:
 
 ```
 cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
@@ -180,116 +172,17 @@ cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
 
 ## Step 4 - Prepare Hyperledger Explorer for use
 
-Replace the contents of the Hyperledger Explorer config file (the connection profile) so it looks as follows. You can simply replace all the contents with the template below, then replace the following values:
-
-* organization and mspid, to match your member ID. This appears in a number of places
-* channel name, if yours is different
-* credentialStores, to match your member ID
-* peer name, which appears in a number of place
-* orderer endpoint
-* CA endpoint
+Hyperledger Explorer uses a connection profile to connect to the Fabric network. If you have worked through Part 3 of this series you will have used connection profiles to connect the REST API to the Fabric network. As in part 3, I generate the connection profile here automatically, based on the ENV variables you populated in the pre-requisites section above (when you sourced fabric-exports.sh). The connection profile does assume that the MSP directory containing the keys and certificates is /home/ec2-user/admin-msp. If you are using a different directory you will need to update the connection profile.
 
 ```
-vi ~/blockchain-explorer/app/platform/fabric/config.json
+cd ~/non-profit-blockchain/blockchain-explorer/connection-profile
+./gen-connection-profile.sh
+more ~/blockchain-explorer/app/platform/fabric/config.json
 ```
 
-Update the config file:
+One difference between the connection profile used by Hyperledger Explorer compared to the profile used by the REST API, is that Hyperledger Explorer expects the peer name in the profile to be the full name of the peer, such as 'nd-mj2vophcizasdg5ssehagqe3n4.m-733fj7siwjavhmyj5z273dz7te.n-erwbh4ou2bhbzfbgnepspy3u5m.managedblockchain.us-east-1.amazonaws.com'. It's not just an ID that you choose. If you do not use the matching peer name you may see an error message when starting the Explorer, that looks like this: 'ReferenceError: host_port is not defined'
 
-```
-{
-  "network-configs": {
-    "network-1": {
-      "version": "1.0",
-      "clients": {
-        "client-1": {
-          "tlsEnable": true,
-          "organization": "m-YB463PPN4NHH5AYGB4EIWKZVWE",
-          "channel": "mychannel",
-          "credentialStore": {
-            "path": "./tmp/m-YB463PPN4NHH5AYGB4EIWKZVWE/credential",
-            "cryptoStore": {
-              "path": "./tmp/m-YB463PPN4NHH5AYGB4EIWKZVWE/crypto"
-            }
-          }
-        }
-      },
-      "channels": {
-        "mychannel": {
-          "orderers": [
-            "orderer"
-          ],
-          "peers": {
-            "nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com": {}
-          },
-          "connection": {
-            "timeout": {
-              "peer": {
-                "endorser": "6000",
-                "eventHub": "6000",
-                "eventReg": "6000"
-              }
-            }
-          }
-        }
-      },
-      "organizations": {
-        "m-YB463PPN4NHH5AYGB4EIWKZVWE": {
-          "mspid": "m-YB463PPN4NHH5AYGB4EIWKZVWE",
-          "fullpath": false,
-          "adminPrivateKey": {
-            "path": "/home/ec2-user/admin-msp/keystore"
-          },
-          "signedCert": {
-            "path": "/home/ec2-user/admin-msp/signcerts"
-          },
-          "certificateAuthorities": ["ca-org1"],
-          "peers": ["nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com"]
-        }
-      },
-      "peers": {
-        "nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com": {
-          "tlsCACerts": {
-            "path": "/home/ec2-user/managedblockchain-tls-chain.pem"
-          },
-          "url": "grpcs://nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com:30003",
-          "eventUrl": "grpcs://nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com:30004",
-          "grpcOptions": {
-            "ssl-target-name-override": "nd-7YLBQ3ZEWRE5RO7MFM2JOZFMAA.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com",
-            "discovery-as-localhost": "false"
-          }
-        }
-      },
-      "orderers": {
-        "orderer": {
-          "tlsCACerts": {
-            "path": "/home/ec2-user/managedblockchain-tls-chain.pem"
-          },
-          "url": "grpcs://orderer.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com:30001",
-          "grpcOptions": {
-            "ssl-target-name-override": "orderer.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com"
-          }
-        }
-      },
-      "certificateAuthorities": {
-        "ca-org1": {
-          "url": "https://ca.m-YB463PPN4NHH5AYGB4EIWKZVWE.n-RX5AFTAGIJDJPOYOBJMPAAJVHA.managedblockchain.us-east-1.amazonaws.com:30002",
-          "httpOptions": {
-            "verify": false
-          },
-          "tlsCACerts": {
-            "path": "/home/ec2-user/managedblockchain-tls-chain.pem"
-          },
-          "caName": "m-YB463PPN4NHH5AYGB4EIWKZVWE"
-        }
-      }
-    }
-  },
-  "configtxgenToolPath": "/fabric-path/fabric-samples/bin",
-  "license": "Apache-2.0"
-}
-```
-
-Depending on the version of Hyperledger Explorer you are using, you may have to update this file also:
+Depending on the version of Hyperledger Explorer you are using, you may have to update this file also. If the file does not exist, create it:
 
 ```
 vi ~/blockchain-explorer/app/platform/fabric/config_ca.json
@@ -325,7 +218,7 @@ npm run build
 
 Run Hyperledger Explorer.
 
-NOTE: depending on the version of Hyperledger Explorer you are using, you might need to use the ENV variable below, otherwise explorer uses the discovery service and wonderfully assumes that all your Fabric components are being run in docker images on localhost. 
+NOTE: depending on the version of Hyperledger Explorer you are using, you might need to use the ENV variable exported below (export DISCOVERY_AS_LOCALHOST=false), otherwise explorer uses the discovery service and wonderfully assumes that all your Fabric components are being run in docker containers on localhost. 
 
 ```
 nvm use lts/carbon
@@ -334,4 +227,97 @@ export DISCOVERY_AS_LOCALHOST=false
 ./start.sh
 ```
 
-The Hyperledger Explorer client starts on port 8080. You will already have an ELB that routes traffic to this port - it was created for you in step 1. Once the health checks on the ELB succeed, you can access the Hyperledger Explorer client using the DNS of the ELB (which you will find in the outputs of your CloudFormation stack).
+The Hyperledger Explorer client starts on port 8080. You will already have an ELB that routes traffic to this port - it was created for you in step 1. 
+Once the health checks on the ELB succeed, you can access the Hyperledger Explorer client using the DNS of the ELB 
+(see the key `BlockchainExplorerELBDNS` in the outputs tab of your CloudFormation stack).
+
+## Step 5 - Use Swagger with Hyperledger Explorer
+Hyperledger Explorer exposes a Swagger Open API Specification UI that can be used for invoking the REST functions exposed by Fabric. 
+The Swagger endpoint can be found by combining the DNS of the ELB created by the CloudFormation template you used to build Hyperledger Explorer. 
+See the stack soc-hyperledger-explorer-rds. In the Outputs section look for a key: BlockchainExplorerELBDNS, then navigate to the URL:
+
+http://<ELBDNS>/api-docs
+
+For example:
+
+http://ngo-hyper-Blockcha-1O59LKQ979CAF-726033826.us-east-1.elb.amazonaws.com/api-docs
+
+To use Swagger for live testing of the API, you will need to update the host property in swagger.json, to point to your ELB DNS:
+
+```
+vi ~/blockchain-explorer/swagger.json
+```
+
+Update the 'host' property, using the same DNS as in step 4:
+
+```
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Hyperledger Explorer REST API Swagger",
+    "description": "Rest API for fabric .",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Hyperledger Team"
+    }
+  },
+  "host": "ngo-hyper-Blockcha-1O59LKQ979CAF-726033826.us-east-1.elb.amazonaws.com",
+```
+
+After updating, restart Hyperledger Explorer, then navigate to the Swagger URL shown in step 4.
+
+## Step 6 - Keeping Hyperledger Explorer Running
+Hyperledger Explorer runs on the Fabric client node. If you exit the SSH session on the Fabric client node, 
+Hyperledger Explorer will automatically exit. You would need to restart it after SSH'ing back into 
+the Fabric client node.
+
+If you need to keep Hyperledger Explorer running after exiting the SSH session, you can use various methods to do this. I use `PM2`, using a command such as `pm2 start main.js`, which will keep the app running and restart it if it fails. The documentation for PM2 can be found here: http://pm2.keymetrics.io/docs/usage/quick-start/ 
+
+Install PM2 as follows:
+
+```
+npm install pm2@latest -g
+```
+
+Then start Hyperledger Explorer:
+
+```
+nvm use lts/carbon
+cd ~/blockchain-explorer/
+export DISCOVERY_AS_LOCALHOST=false
+rm -rf /tmp/fabric-client-kvs_peerOrg*
+rm -rf ./tmp
+pm2 start main.js
+```
+
+The PM2 logs can be found in `~/.pm2/logs`.
+
+To restart Hyperledger Explorer after making changes:
+
+```
+nvm use lts/carbon
+cd ~/blockchain-explorer/
+export DISCOVERY_AS_LOCALHOST=false
+rm -rf /tmp/fabric-client-kvs_peerOrg*
+rm -rf ./tmp
+pm2 restart main.js
+```
+
+To stop Hyperledger Explorer:
+
+```
+nvm use lts/carbon
+cd ~/blockchain-explorer/
+export DISCOVERY_AS_LOCALHOST=false
+rm -rf /tmp/fabric-client-kvs_peerOrg*
+rm -rf ./tmp
+pm2 stop main.js
+```
+
+To remove the PM2 and Hyperledger Explorer logs:
+
+```
+rm ~/.pm2/logs/main*
+rm ~/.pm2/logs/sync*
+rm -rf ./logs
+```
