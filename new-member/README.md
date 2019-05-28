@@ -100,13 +100,10 @@ cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git
 ```
 
-Download the model file for the new Amazon Managed Blockchain service. This is a temporary step
-and will not be required once the `managedblockchain` service has been included in the latest CLI.
+Update your AWS CLI to the latest version.
 
 ```
-cd ~
-aws s3 cp s3://us-east-1.managedblockchain-preview/etc/service-2.json .
-aws configure add-model --service-model file://service-2.json
+sudo pip install awscli --upgrade
 ```
 
 ## Step 1: Account A invites Account B to join the Fabric network
@@ -235,6 +232,12 @@ If the file has values for all keys, source it:
 
 ```
 source ~/peer-exports.sh 
+```
+
+Get the latest version of the Managed Blockchain PEM file. This will overwrite the existing file in the home directory with the latest version of this file:
+
+```
+aws s3 cp s3://us-east-1.managedblockchain/etc/managedblockchain-tls-chain.pem  /home/ec2-user/managedblockchain-tls-chain.pem
 ```
 
 Enroll an admin identity with the Fabric CA (certificate authority). We will use this

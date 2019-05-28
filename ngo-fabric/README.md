@@ -15,7 +15,7 @@ We will use AWS Cloud9 to provide a Linux terminal which has the AWS CLI already
 1. Spin up a [Cloud9 IDE](https://us-east-1.console.aws.amazon.com/cloud9/home?region=us-east-1) from the AWS console.
 In the Cloud9 console, click 'Create Environment'. Using 'us-east-1' for the region will be easier.
 2. Provide a name for your environment, e.g. fabric-c9, and click **Next Step**
-3. Select `Other instance type`, then select `t2-medium` and click **Next Step**
+3. Select `Other instance type`, then select `t2.medium` and click **Next Step**
 4. Click **Create environment**. It would typically take 30-60s to create your Cloud9 IDE
 5. In the Cloud9 terminal, in the home directory, clone this repo:
 
@@ -24,13 +24,10 @@ cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git
 ```
 
-Download the model file for the new Amazon Managed Blockchain service. This is a temporary step
-and will not be required once the `managedblockchain` service has been included in the latest CLI.
+Update your AWS CLI to the latest version.
 
 ```
-cd ~
-aws s3 cp s3://us-east-1.managedblockchain-preview/etc/service-2.json .
-aws configure add-model --service-model file://service-2.json
+sudo pip install awscli --upgrade
 ```
 
 ## Step 1 - Create the Hyperledger Fabric blockchain network
@@ -44,9 +41,9 @@ Make sure you are in the correct AWS region (i.e. us-east-1, also known as N. Vi
 4. Enter a member name (e.g. this could be the name of the organisation you belong to) and an optional description
 5. Enter an admin username and password, and note this down. You will need it later. Click `Next`
 6. Check your configuration and click `Create network and member`
-7. Wait until the status of your network and your network member become ACTIVE.
+7. Wait until the status of your network and your network member become Available.
 
-Before continuing, check to see that your Fabric network has been created and is ACTIVE. If not,
+Before continuing, check to see that your Fabric network has been created and is Available. If not,
 wait for it to complete. Otherwise the steps below may fail.
 
 ## Step 2 - Create the Fabric Peer
@@ -56,7 +53,7 @@ In the Amazon Managed Blockchain Console: https://console.aws.amazon.com/managed
 2. Click `Create peer node`
 3. Accept the defaults, and click `Create peer node`
 
-We'll continue with the next steps while we wait for the peer node to become HEALTHY.
+We'll continue with the next steps while we wait for the peer node to become Available.
 
 ## Step 3 - Create the Fabric client node
 In your Cloud9 terminal window.
@@ -168,6 +165,12 @@ If the file has values for all keys, source it:
 source ~/peer-exports.sh 
 ```
 
+Get the latest version of the Managed Blockchain PEM file. This will overwrite the existing file in the home directory with the latest version of this file:
+
+```
+aws s3 cp s3://us-east-1.managedblockchain/etc/managedblockchain-tls-chain.pem  /home/ec2-user/managedblockchain-tls-chain.pem
+```
+
 Enroll an admin identity with the Fabric CA (certificate authority). We will use this
 identity to administer the Fabric network and perform tasks such as creating channels
 and instantiating chaincode.
@@ -237,7 +240,7 @@ Execute the following script:
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
-    cli peer channel create -c $CHANNEL -f /opt/home/$CHANNEL.pb -o $ORDERER --cafile $CAFILE --tls
+    cli peer channel create -c $CHANNEL -f /opt/home/$CHANNEL.pb -o $ORDERER --cafile $CAFILE --tls --timeout 900s
 ```
 
 You should see:
