@@ -159,7 +159,7 @@ Resources:
     Properties:
         KeyName:                                  !Ref KeyName
         ImageId:                                  'ami-0434d5878c6ad6d4c'
-        InstanceType:                             't2.small'
+        InstanceType:                             't2.medium'
         IamInstanceProfile:                       !Ref BlockchainWorkshopRootInstanceProfile
         NetworkInterfaces:
         - AssociatePublicIpAddress:               true
