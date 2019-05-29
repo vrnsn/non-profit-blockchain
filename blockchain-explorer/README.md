@@ -96,7 +96,7 @@ cd ~/non-profit-blockchain/blockchain-explorer
 Once step 2 has completed and your PostgreSQL instance is running, you will create tables in a PostgreSQL database. These tables are used by Hyperledger Explorer to store details of your Fabric network. Before running the script to create the tables, update the Hyperledger Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
 
 ```
-sed -i "s/varchar(64)/varchar(256)/g" ~/blockchain-explorer/app/persistence/fabric/PostgreSQL/db/explorerpg.sql
+sed -i "s/varchar(64)/varchar(256)/g" ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/explorerpg.sql
 ```
 
 Update the Hyperledger Explorer database connection config with the Amazon RDS connection details. Replace the host, username and password with those you used when you created your PostgreSQL instance. These values can be obtained from the following:
@@ -112,9 +112,9 @@ Update the config file. I suggest you simply replace all the contents with the s
 
 ```
 {
-  "persistence": "PostgreSQL",
+  "persistence": "postgreSQL",
   "platforms": ["fabric"],
-  "PostgreSQL": {
+  "postgreSQL": {
     "host": "sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com",
     "port": "5432",
     "database": "fabricexplorer",
@@ -132,18 +132,18 @@ Update the config file. I suggest you simply replace all the contents with the s
 Replace the contents of the table creation script so it looks as follows. You can simply replace all the contents with those below:
 
 ```
-vi ~/blockchain-explorer/app/persistence/fabric/PostgreSQL/db/createdb.sh
+vi ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/createdb.sh
 ```
 
 Update the script file:
 
 ```
 #!/bin/bash
-export CONN=$( jq -r .PostgreSQL.conn ../../../../explorerconfig.json )
-export HOSTNAME=$( jq -r .PostgreSQL.host ../../../../explorerconfig.json )
-export USER=$( jq -r .PostgreSQL.username ../../../../explorerconfig.json )
-export DATABASE=$(jq -r .PostgreSQL.database ../../../../explorerconfig.json )
-export PASSWD=$(jq .PostgreSQL.passwd ../../../../explorerconfig.json | sed "y/\"/'/")
+export CONN=$( jq -r .postgreSQL.conn ../../../../explorerconfig.json )
+export HOSTNAME=$( jq -r .postgreSQL.host ../../../../explorerconfig.json )
+export USER=$( jq -r .postgreSQL.username ../../../../explorerconfig.json )
+export DATABASE=$(jq -r .postgreSQL.database ../../../../explorerconfig.json )
+export PASSWD=$(jq .postgreSQL.passwd ../../../../explorerconfig.json | sed "y/\"/'/")
 echo "USER=${USER}"
 echo "DATABASE=${DATABASE}"
 echo "PASSWD=${PASSWD}"
@@ -157,7 +157,7 @@ psql -X -h $HOSTNAME -d $DATABASE --username=$USER -v dbname=$DATABASE -v user=$
 Now create the database tables. You will need to enter the password for the 'master' user, the same as you entered up above when editing 'explorerconfig.json'. You will need to enter this password for two different steps:
 
 ```
-cd ~/blockchain-explorer/app/persistence/fabric/PostgreSQL/db
+cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
 ./createdb.sh
 ```
 
