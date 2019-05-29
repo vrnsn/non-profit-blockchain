@@ -32,6 +32,7 @@ README instructions in parts 1-4, in this order:
 * [Part 3:](ngo-rest-api/README.md) Run the RESTful API server. 
 * [Part 4:](ngo-ui/README.md) Run the application. 
 * [Part 5:](new-member/README.md) Add a new member to the network. 
+* [Part 6:](blockchain-explorer/README.md) Deploy Hyperledger Explorer. 
 
 ## Cleanup
 
