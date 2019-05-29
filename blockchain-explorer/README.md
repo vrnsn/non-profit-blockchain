@@ -50,7 +50,7 @@ Install jq and PostgreSQL. We only really need the PostgreSQL client, but I inst
 
 ```
 sudo yum install -y jq
-sudo yum install -y PostgreSQL PostgreSQL-server PostgreSQL-devel PostgreSQL-contrib PostgreSQL-docs
+sudo yum install -y postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
 ```
 
 You will need to export a number of environment variables. The easiest way to do this is by simply sourcing the 
