@@ -227,9 +227,7 @@ export DISCOVERY_AS_LOCALHOST=false
 The Hyperledger Explorer client starts on port 8080. You already have an ELB that routes traffic to this port. The ELB was created for you by the AWS CloudFormation template in step 2. Once the health checks on the ELB succeed, you can access the Hyperledger Explorer client using the DNS of the ELB. You can find the ELB endpoint using the key `BlockchainExplorerELBDNS` in the outputs tab of the CloudFormation stack.
 
 ## Step 6 - Use the Swagger Open API Specification UI to interact with Hyperledger Explorer
-Hyperledger Explorer provides a RESTful API that you can use to interact with the Fabric network. Appending ‘api-docs’ to the same ELB endpoint you used in step 5 will display the Swagger home page for the API:
-
-http://<ELBDNS>/api-docs
+Hyperledger Explorer provides a RESTful API that you can use to interact with the Fabric network. Appending ‘api-docs’ to the same ELB endpoint you used in step 5 will display the Swagger home page for the API.
 
 For example:
 
@@ -257,7 +255,9 @@ Update the 'host' property, using the same DNS as in step 5:
   "host": "ngo-hyper-Blockcha-1O59LKQ979CAF-726033826.us-east-1.elb.amazonaws.com",
 ```
 
-After updating the file, restart Hyperledger Explorer, then navigate to the Swagger URL: http://<ELBDNS>/api-docs
+After updating the file, restart Hyperledger Explorer, then navigate to the Swagger URL.
+
+*If the Swagger UI is still pointing to localhost after you update swagger.json, you may need to rebuild Hyperledger Explorer, by following the build instructions in step 4*
 
 ## Step 7 - Keeping Hyperledger Explorer Running
 Hyperledger Explorer runs on the Fabric client node. If you exit the SSH session on the Fabric client node, 
