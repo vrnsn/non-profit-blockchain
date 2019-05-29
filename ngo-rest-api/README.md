@@ -17,6 +17,7 @@ ssh ec2-user@<dns of EC2 instance> -i ~/<Fabric network name>-keypair.pem
 
 You should have already cloned this repo in [Part 1](../ngo-fabric/README.md)
 
+*Double check that the repo URL is correct. If you have forked this repo, your URL will differ.*
 ```
 cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git

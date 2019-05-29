@@ -54,8 +54,9 @@ In the AWS account where you create the [Part 1](../ngo-fabric/README.md) Fabric
 ssh ec2-user@<dns of EC2 instance> -i ~/<Fabric network name>-keypair.pem
 ```
 
-You should have already cloned this repo in [Part 1](../ngo-fabric/README.md)
+You should have already cloned this repo in [Part 1](../ngo-fabric/README.md).
 
+*Double check that the repo URL is correct. If you have forked this repo, your URL will differ.*
 ```
 cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git
@@ -95,6 +96,7 @@ In the Cloud9 console, click 'Create Environment'. Using 'us-east-1' for the reg
 4. Click **Create environment**. It would typically take 30-60s to create your Cloud9 IDE
 5. In the Cloud9 terminal, in the home directory, clone this repo:
 
+*Double check that the repo URL is correct. If you have forked this repo, your URL will differ.*
 ```
 cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git
@@ -185,6 +187,7 @@ ssh ec2-user@<dns of EC2 instance> -i ~/<Fabric network name>-keypair.pem
 
 Clone the repo:
 
+*Double check that the repo URL is correct. If you have forked this repo, your URL will differ.*
 ```
 cd ~
 git clone https://github.com/aws-samples/non-profit-blockchain.git
