@@ -18,7 +18,7 @@ The instructions below are complete. You can refer to the instructions in the Hy
 | --- | --- |
 | [Pre-requisites](#pre-requisites) | (no change) |
 | [Step 1 - Clone the appropriate version of the Hyperledger Explorer repository](#step-1---clone-the-appropriate-version-of-the-hyperledger-explorer-repository) | (no change) |
-| [Step 2 - Create the Amazon RDS PostgreSQL instance used by Hyperledger Explorer](#step-2---create-the-Amazon-RDS-PostgreSQL-instance-used-by-Hyperledger-Explorer) | [Step 2 - Docker Postgres - Deploy Postgres Database Docker Image](#step-2-Docker-Postgres---Deploy-Postgres-Database-Docker-Image) |
+| [Step 2 - Create the Amazon RDS PostgreSQL instance used by Hyperledger Explorer](#step-2---create-the-Amazon-RDS-PostgreSQL-instance-used-by-Hyperledger-Explorer) | [Step 2 - Docker Postgres - Deploy Postgres Database Docker Image](#step-2---Docker-Postgres---Deploy-Postgres-Database-Docker-Image) |
 
 
 ## Pre-requisites
