@@ -16,8 +16,8 @@ The instructions below are complete. You can refer to the instructions in the Hy
 
 | RDS - PostgreSQL | Docker - PostgreSQL |
 | --- | --- |
-| [Pre-requisites](#-pre-requisites) |
-| [Step 1 - Clone the appropriate version of the Hyperledger Explorer repository](#-step-1---clone-the-appropriate-version-of-the-hyperledger-explorer-repository) | 
+| [Pre-requisites](#pre-requisites) | (no change) |
+| [Step 1 - Clone the appropriate version of the Hyperledger Explorer repository](#step-1---clone-the-appropriate-version-of-the-hyperledger-explorer-repository) | (no change) | 
 
 ## Pre-requisites
 
