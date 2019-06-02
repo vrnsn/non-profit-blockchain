@@ -14,6 +14,11 @@ We will configure Hyperledger Explorer to use an Amazon RDS PostgreSQL instance 
 
 The instructions below are complete. You can refer to the instructions in the Hyperledger Explorer GitHub repo for reference, but you do not need to use them.
 
+| RDS - PostgreSQL | Docker - PostgreSQL |
+| --- | --- |
+| [Pre-requisites](#-pre-requisites) |
+| [Step 1 - Clone the appropriate version of the Hyperledger Explorer repository](#-step-1---clone-the-appropriate-version-of-the-hyperledger-explorer-repository) | 
+
 ## Pre-requisites
 
 On the Fabric client node.
@@ -91,7 +96,7 @@ cd ~/non-profit-blockchain/blockchain-explorer
 ./hyperledger-explorer-rds.sh
 ```
 
-## Step 2 (option) -  Deploy Postgres Database as Docker
+## Step 2 (Docker Postgres) -  Deploy Postgres Database as Docker
 
 We can also use Docker`s official postgres image (https://hub.docker.com/_/postgres_) to persist FabricExplorer data, locally in the fabric client. You need PostgreSQL 9.5 or greater; therefore you can keep the latest image tag (at the time this piece is written the latest version was 11.3).
 
@@ -209,6 +214,82 @@ If you need to connect to psql via the command line, use this (replacing the RDS
 
 ```
 psql -X -h sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com -d fabricexplorer --username=master 
+```
+
+## Step 3 (Docker Postgres) - Create the Hyperledger Explorer database tables in the PostgreSQL docker database
+Once step 2 has completed and your PostgreSQL instance is running, you will create tables in a PostgreSQL database. These tables are used by Hyperledger Explorer to store details of your Fabric network. Before running the script to create the tables, update the Hyperledger Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
+
+```
+sed -i "s/varchar(64)/varchar(256)/g" ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/explorerpg.sql
+```
+
+Update the Hyperledger Explorer database connection config with the local postgresql docker details. Replace the host, username and password with those you used when you created your PostgreSQL instance. These values can be obtained from the following:
+
+* host: docker postgres image is running in the client, localhost. Even though we have not made any changes to docker networking configuration; the localhost port 5432 is mapped to postgres image. 
+
+* username & password: we setup superuser user&credentials in the docker compose file. 
+
+```
+vi ~/blockchain-explorer/app/explorerconfig.json
+```
+
+Update the config file. I suggest you simply replace all the contents with the snippet below, then replace the 'host' property and postgres user credentials with your own:
+
+```
+{
+  "persistence": "postgreSQL",
+  "platforms": ["fabric"],
+  "postgreSQL": {
+    "host": "localhost",
+    "port": "5432",
+    "database": "fabricexplorer",
+    "username": "superuser",
+    "passwd": "superuser1234"
+  },
+  "sync": {
+    "type": "local",
+    "platform": "fabric",
+    "blocksSyncTime": "3"
+  }
+}
+```
+
+Replace the contents of the table creation script so it looks as follows. You can simply replace all the contents with those below:
+
+```
+vi ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db/createdb.sh
+```
+
+Update the script file:
+
+```
+#!/bin/bash
+export CONN=$( jq -r .postgreSQL.conn ../../../../explorerconfig.json )
+export HOSTNAME=$( jq -r .postgreSQL.host ../../../../explorerconfig.json )
+export USER=$( jq -r .postgreSQL.username ../../../../explorerconfig.json )
+export DATABASE=$(jq -r .postgreSQL.database ../../../../explorerconfig.json )
+export PASSWD=$(jq .postgreSQL.passwd ../../../../explorerconfig.json | sed "y/\"/'/")
+echo "USER=${USER}"
+echo "DATABASE=${DATABASE}"
+echo "PASSWD=${PASSWD}"
+echo "CONN=${CONN}"
+echo "HOSTNAME=${HOSTNAME}"
+echo "Executing SQL scripts..."
+psql -X -h $HOSTNAME  --username=$USER -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./explorerpg.sql ;
+psql -X -h $HOSTNAME  --username=$USER -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./updatepg.sql ;
+```
+
+Now create the database tables. You will need to enter the password for the 'superuser' user, the same as you entered up above when editing 'explorerconfig.json'. You will need to enter this password for two different steps:
+
+```
+cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
+./createdb.sh
+```
+
+If you need to connect to psql via the command line, use this (replacing the RDS DNS with your own):
+
+```
+psql -X -h localhost -d fabricexplorer --username=superuser 
 ```
 
 ## Step 4 - Create a connection profile to connect Hyperledger Explorer to Amazon Managed Blockchain
