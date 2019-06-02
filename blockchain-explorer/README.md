@@ -19,6 +19,11 @@ The instructions below are complete. You can refer to the instructions in the Hy
 | [Pre-requisites](#pre-requisites) | (no change) |
 | [Step 1 - Clone the appropriate version of the Hyperledger Explorer repository](#step-1---clone-the-appropriate-version-of-the-hyperledger-explorer-repository) | (no change) |
 | [Step 2 - Create the Amazon RDS PostgreSQL instance used by Hyperledger Explorer](#step-2---create-the-Amazon-RDS-PostgreSQL-instance-used-by-Hyperledger-Explorer) | [Step 2 - Docker Postgres - Deploy Postgres Database Docker Image](#step-2---Docker-Postgres---Deploy-Postgres-Database-Docker-Image) |
+| [Step 3 - Create the Hyperledger Explorer database tables in the PostgreSQL RDS database](#Step-3---Create-the-Hyperledger-Explorer-database-tables-in-the-PostgreSQL-RDS-database) | [Step 3 - Docker Postgres - Create the Hyperledger Explorer database tables in the Docker PostgreSQL database](#Step-3---Docker-Postgres---Create-the-Hyperledger-Explorer-database-tables-in-the-Docker-PostgreSQL-database) |
+| [Step 4 - Create a connection profile to connect Hyperledger Explorer to Amazon Managed Blockchain](#Step-4---Create-a-connection-profile-to-connect-Hyperledger-Explorer-to-Amazon-Managed-Blockchain) | (no change) |
+| [Step 5 - Run Hyperledger Explorer and view the dashboard](#Step-5---Run-Hyperledger-Explorer-and-view-the-dashboard) | (no change) |
+| [Step 6 - Use the Swagger Open API Specification UI to interact with Hyperledger Explorer](#Step-6---Use-the-Swagger-Open-API-Specification-UI-to-interact-with-Hyperledger-Explorer) | (no change) |
+| [Step 7 - Keeping Hyperledger Explorer Running](#Step-7---Keeping-Hyperledger-Explorer-Running) | (no change) | 
 
 
 ## Pre-requisites
@@ -218,7 +223,7 @@ If you need to connect to psql via the command line, use this (replacing the RDS
 psql -X -h sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com -d fabricexplorer --username=master 
 ```
 
-## Step 3 (Docker Postgres) - Create the Hyperledger Explorer database tables in the PostgreSQL docker database
+## Step 3 - Docker Postgres - Create the Hyperledger Explorer database tables in the Docker PostgreSQL database
 Once step 2 has completed and your PostgreSQL instance is running, you will create tables in a PostgreSQL database. These tables are used by Hyperledger Explorer to store details of your Fabric network. Before running the script to create the tables, update the Hyperledger Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
 
 ```
