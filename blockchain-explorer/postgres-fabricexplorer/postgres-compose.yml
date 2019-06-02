@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: superuser1234
+    volumes:
+      - ~/postgres-fabricexplorer/pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
