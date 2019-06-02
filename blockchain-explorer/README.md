@@ -91,6 +91,50 @@ cd ~/non-profit-blockchain/blockchain-explorer
 ./hyperledger-explorer-rds.sh
 ```
 
+## Step 2 (option) -  Deploy Postgres Database as Docker
+
+We can also use Docker`s official postgres image (https://hub.docker.com/_/postgres_) to persist FabricExplorer data, locally in the fabric client. You need PostgreSQL 9.5 or greater; therefore you can keep the latest image tag (at the time this piece is written the latest version was 11.3).
+
+You may also want to create a dedicated folder to keep postgres database and docker configuration files. 
+
+Create Postgres folders:
+```
+mkdir ~/postgres-fabricexplorer
+mkdir ~/postgres-fabricexplorer/pgdata
+```
+
+We are going to keep the docker file for postgres simple; however you can further customize your deployment by following instructions in the link above. You can either create the file yourself; or use the file "postgres-compose.yml".
+
+"postgres-compose.yml" file:
+```
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: superuser1234
+    volumes:
+      - ~/postgres-fabricexplorer/pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+```
+
+We can now start the postgres container in detached mode:
+
+```
+docker-compose -f ~/postgres-fabricexplorer/postgres-compose.yml up -d
+```
+
+The docker image will expose and map postgres port 5432 to the same port of the client. Please make sure to check container logs to see database is ready to accept connections:
+```
+docker ps
+docker logs <postgres-container-id/name>
+```
+
+
 ## Step 3 - Create the Hyperledger Explorer database tables in the PostgreSQL RDS database
 
 Once step 2 has completed and your PostgreSQL instance is running, you will create tables in a PostgreSQL database. These tables are used by Hyperledger Explorer to store details of your Fabric network. Before running the script to create the tables, update the Hyperledger Explorer table creation script. The columns created by the script are too small to contain the long peer names used by Managed Blockchain, so we edit the script to increase the length:
