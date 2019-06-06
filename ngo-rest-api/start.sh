@@ -15,8 +15,8 @@
 
 # Clears the key stores before starting the Node app
 
-rm -rf /tmp/fabric-client-kv-org1/
-rm -rf fabric-client-kv-org1/
-rm -rf /tmp/fabric-client-kv-org2/
-rm -rf fabric-client-kv-org2/
+rm -rf /tmp/fabric-client-kv-rest-org1/
+rm -rf fabric-client-kv-rest-org1/
+rm -rf /tmp/fabric-client-kv-rest-org2/
+rm -rf fabric-client-kv-rest-org2/
 node app.js 

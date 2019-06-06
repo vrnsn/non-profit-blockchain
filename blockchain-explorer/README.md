@@ -16,6 +16,8 @@ The instructions below are complete. You can refer to the instructions in the Hy
 
 ## Pre-requisites
 
+An Amazon Managed Blockchain network provisioned based on the steps in [Part 1](../ngo-fabric/README.md) is a pre-requisite. The CIDR range of the subnet used by the Fabric client node has been changed to accommodate the additional subnets required by Hyperledger Explorer, so you will either need to recreate your Fabric client node VPC (i.e. delete the CloudFormation stack you created in step 4 of [Part 1](../ngo-fabric/README.md), or you can simply create a new Fabric network starting from step 1 of [Part 1](../ngo-fabric/README.md) .
+
 On the Fabric client node.
 
 From Cloud9, SSH into the Fabric client node. The key (i.e. the .PEM file) should be in your home directory. 
