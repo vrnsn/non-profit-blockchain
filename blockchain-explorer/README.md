@@ -217,7 +217,7 @@ cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
 ./createdb.sh
 ```
 
-If you need to connect to psql via the command line, use this to connect to the client postgresql instance :
+If you need to connect to psql via the command line, use this (replacing the RDS DNS with your own):
 
 ```
 psql -X -h sd1erq6vwko24hx.ce2rsaaq7nas.us-east-1.rds.amazonaws.com -d fabricexplorer --username=master 
@@ -293,7 +293,7 @@ cd ~/blockchain-explorer/app/persistence/fabric/postgreSQL/db
 ./createdb.sh
 ```
 
-If you need to connect to psql via the command line, use this (replacing the RDS DNS with your own):
+If you need to connect to psql via the command line, use this to connect to the client postgresql instance :
 
 ```
 psql -X -h localhost -d fabricexplorer --username=superuser 
