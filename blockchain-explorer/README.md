@@ -112,7 +112,7 @@ If you pick the script path, create the file with script contents:
 ```
 touch ~/postgres-fabricexplorer.sh
 ```
-and copy the contents by using your favorite tool (such as vim or emacs). The scripts is included in "postgres-fabricexplorer" folder [here](postgres-fabricexplorer.sh). Then provide execute privileges to your current user:
+and copy the contents by using your favorite tool (such as vim or emacs). The scripts is included in "postgres-fabricexplorer" folder [here](https://github.com/vrnsn/non-profit-blockchain/blob/feature/part6-evren/blockchain-explorer/postgres-fabricexplorer/postgres-fabricexplorer.sh). Then provide execute privileges to your current user:
 ```
 chmod +x ~/postgres-fabricexplorer.sh
 ```
