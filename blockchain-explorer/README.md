@@ -107,6 +107,18 @@ cd ~/non-profit-blockchain/blockchain-explorer
 
 We can also use Docker`s official postgres image (https://hub.docker.com/_/postgres_) to persist FabricExplorer data, locally in the fabric client. You need PostgreSQL 9.5 or greater; therefore you can keep the latest image tag (at the time this piece is written the latest version was 11.3).
 
+We can either follow instructions below and go through steps manually, or run the "postgres-fabricexplorer.sh" script (script simply goes through steps below). 
+If you pick the script path, create the file with script contents:
+```
+touch ~/postgres-fabricexplorer.sh
+```
+and copy the contents by using your favorite tool (such as vim or emacs). Then provide execute privileges to your current user:
+```
+chmod +x ~/postgres-fabricexplorer.sh
+```
+
+If you want to follow steps manually, then:
+
 You may also want to create a dedicated folder to keep postgres database and docker configuration files. 
 
 Create Postgres folders:
