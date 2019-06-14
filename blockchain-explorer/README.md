@@ -112,12 +112,12 @@ If you pick the script path, create the file with script contents:
 ```
 touch ~/postgres-fabricexplorer.sh
 ```
-and copy the contents by using your favorite tool (such as vim or emacs). Then provide execute privileges to your current user:
+and copy the contents by using your favorite tool (such as vim or emacs). The scripts is included in "postgres-fabricexplorer" folder [here](postgres-fabricexplorer.sh). Then provide execute privileges to your current user:
 ```
 chmod +x ~/postgres-fabricexplorer.sh
 ```
 
-If you want to follow steps manually, then:
+If you want to follow steps manually, then you can continue from here:
 
 You may also want to create a dedicated folder to keep postgres database and docker configuration files. 
 
